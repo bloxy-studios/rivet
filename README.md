@@ -1,159 +1,107 @@
-# Turborepo starter
+# Rivet
 
-This Turborepo starter is maintained by the Turborepo core team.
+Turborepo monorepo that uses **Bun** for installs, scripts, and Vercel builds.
 
-## Using this example
+## Requirements
 
-Run the following command:
+- [Bun](https://bun.sh) 1.4.0 or later
 
 ```sh
-npx create-turbo@latest
+curl -fsSL https://bun.sh/install | bash
+```
+
+## Develop
+
+```sh
+bun install
+bun run dev
+```
+
+Run a single app:
+
+```sh
+bunx turbo run dev --filter=web
+bunx turbo run dev --filter=docs
+```
+
+## Build
+
+```sh
+bun run build
+```
+
+```sh
+bunx turbo run build --filter=web
+bunx turbo run build --filter=docs
+```
+
+## Other scripts
+
+```sh
+bun run lint
+bun run check-types
+bun run format
 ```
 
 ## What's inside?
 
-This Turborepo includes the following packages/apps:
-
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `web`: Next.js app
+- `docs`: Next.js app
+- `@repo/ui`: shared React component library
+- `@repo/eslint-config`: shared ESLint configs
+- `@repo/typescript-config`: shared `tsconfig.json`s
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Tooling
 
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
+- [Bun](https://bun.sh) for package management and script execution
 - [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- [Turborepo](https://turborepo.dev) for task orchestration
+- [Prettier](https://prettier.io) for formatting
 
-### Build
+## Deploy on Vercel
 
-To build all apps and packages, run the following command:
+Create **one Vercel project per app** and set the Root Directory to that app:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+| App | Root Directory |
+| --- | -------------- |
+| `web` | `apps/web` |
+| `docs` | `apps/docs` |
 
-```sh
-cd my-turborepo
-turbo build
-```
+Each app ships a `vercel.json` that:
 
-Without global `turbo`, use your package manager:
+- Installs from the monorepo root with `bun install`
+- Builds with `bunx turbo run build --filter=<app>`
+- Runs Next.js and functions on the **Bun 1.x** runtime
+- Skips unchanged builds with `turbo-ignore`
 
-```sh
-cd my-turborepo
-npx turbo build
-bun exec turbo build
-bun exec turbo build
-```
+When importing the Git repository in the Vercel dashboard:
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+1. Select the repository
+2. Set **Root Directory** to `apps/web` or `apps/docs`
+3. Leave Framework Preset as Next.js
+4. Do not override the Install or Build commands — `vercel.json` already sets them
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
-```
-
-Without global `turbo`:
+Or deploy an app from its directory with the Vercel CLI:
 
 ```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
+bunx vercel link --cwd apps/web
+bunx vercel deploy --cwd apps/web
 ```
 
-### Develop
+## Remote Caching
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Vercel Remote Cache is enabled automatically for Turborepo deployments. To use it locally:
 
 ```sh
-cd my-turborepo
-turbo dev
+bunx turbo login
+bunx turbo link
 ```
 
-Without global `turbo`, use your package manager:
+## Useful links
 
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- [Turborepo tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
+- [Vercel + Turborepo](https://vercel.com/docs/monorepos/turborepo)
+- [Vercel package managers](https://vercel.com/docs/package-managers)
+- [Bun on Vercel](https://vercel.com/docs/functions/runtimes/bun)
