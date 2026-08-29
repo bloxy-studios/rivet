@@ -24,6 +24,7 @@ code or a reason to supersede the ADR, never something to merge quietly.
 | [0003](./0003-storage-architecture.md) | Postgres control plane, ClickHouse telemetry, S3-compatible blobs | Accepted |
 | [0004](./0004-telemetry-protocol.md) | OTLP-native signals + versioned Rivet error envelope | Accepted |
 | [0005](./0005-agent-safety-invariants.md) | Agent safety invariants: capabilities, approval gate, sandbox, audit | Accepted |
+| [0006](./0006-orm-and-migrations.md) | Drizzle ORM + postgres.js, committed SQL migrations, PGlite-backed tests | Accepted |
 
 ## Queued decisions
 
@@ -33,7 +34,6 @@ speculation:
 
 | # | Decision | Phase |
 | --- | --- | --- |
-| 0006 | Control-plane ORM / migration tooling | 1 |
 | 0007 | Authentication provider/architecture (multi-tenant, self-host friendly) | 1 |
 | 0008 | Server framework for api/ingest (Bun-native HTTP) | 1 |
 | 0009 | Job queue / scheduling runtime (Postgres-backed first?) | 2 |
