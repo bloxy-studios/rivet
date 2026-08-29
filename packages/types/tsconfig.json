@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "declaration": false,
+    "declarationMap": false,
+    "noEmit": true,
+    "exactOptionalPropertyTypes": true
+  },
+  "include": ["src"]
+}
