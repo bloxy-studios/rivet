@@ -2,6 +2,7 @@
   "name": "rivet",
   "private": true,
   "packageManager": "bun@1.4.0",
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -10,7 +11,10 @@
     "typecheck": "turbo run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "bun run lint && bun run typecheck && bun run test"
+    "check": "bun run lint && bun run typecheck && bun run test",
+    "db:generate": "bun run --filter @rivet/database generate",
+    "db:migrate": "bun run --filter @rivet/database migrate",
+    "db:seed": "bun run --filter @rivet/database seed"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.2",
