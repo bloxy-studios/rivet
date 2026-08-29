@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose an improvement
+labels: ["feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't you do today, or what is painful? Features are evaluated by whether they make debugging, reliability, remediation, or OSS adoption materially better.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: markdown
+    attributes:
+      value: |
+        Major changes (protocols, breaking APIs, new agent capabilities, storage) go
+        through the RFC process — see GOVERNANCE.md. Feel free to open the issue
+        anyway; we'll route it.

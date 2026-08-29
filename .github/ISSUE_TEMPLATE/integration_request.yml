@@ -1,0 +1,31 @@
+name: Integration request
+description: Request a provider (SCM, notifications, deployment, model, storage) or SDK
+labels: ["integration"]
+body:
+  - type: input
+    id: service
+    attributes:
+      label: Service / language
+      description: e.g. GitLab, Mattermost, Fly.io deployments, Python SDK
+    validations:
+      required: true
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Use case
+      description: How would you use it? Which events/actions matter?
+    validations:
+      required: true
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you be interested in contributing it?
+      options:
+        - "Yes, with guidance"
+        - "Maybe"
+        - "No"
+  - type: markdown
+    attributes:
+      value: |
+        Integrations are built behind documented provider interfaces (Phase 4 of the
+        phase plan). Requests filed now shape those interfaces.

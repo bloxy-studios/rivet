@@ -1,0 +1,8 @@
+# Default owners for everything in the repository.
+# Update as the maintainer group grows (see GOVERNANCE.md).
+* @bloxy-studios/maintainers
+
+# Safety-critical: agent invariants and their tests get extra scrutiny.
+/packages/types/src/agent-state.ts @bloxy-studios/maintainers
+/packages/types/src/capabilities.ts @bloxy-studios/maintainers
+/docs/adr/ @bloxy-studios/maintainers
