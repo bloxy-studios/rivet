@@ -64,17 +64,18 @@ bun run format
 
 Create **one Vercel project per app** and set the Root Directory to that app:
 
-| App | Root Directory |
-| --- | -------------- |
-| `web` | `apps/web` |
-| `docs` | `apps/docs` |
+| App    | Root Directory |
+| ------ | -------------- |
+| `web`  | `apps/web`     |
+| `docs` | `apps/docs`    |
 
 Each app ships a `vercel.json` that:
 
-- Installs from the monorepo root with `bun install`
+- Installs Bun 1.4.0 on the build machine (Vercel’s default is 1.3.x, which cannot read this repo’s `bun.lock`)
+- Installs from the monorepo root with `bun install --frozen-lockfile`
 - Builds with `bunx turbo run build --filter=<app>`
 - Runs Next.js and functions on the **Bun 1.x** runtime
-- Skips unchanged builds with `turbo-ignore`
+- Relies on Vercel’s built-in monorepo skipping for unchanged apps
 
 When importing the Git repository in the Vercel dashboard:
 
