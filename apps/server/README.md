@@ -21,6 +21,14 @@ listed. Variables: `DATABASE_URL`, `RIVET_AUTH_SECRET` (≥32 chars),
 `RIVET_BASE_URL`, `PORT` (default 3001), `RIVET_TRUSTED_ORIGINS` (comma-separated,
 optional). See `.env.example` at the repository root.
 
+## Deployment
+
+Primary: self-hosted (Docker Compose, PR-5). A Vercel deployment is also supported via
+the `/api` Bun Function model — `vercel.json` pins Bun 1.4 for installs (the default
+build image cannot read this repo's lockfile), selects the Bun runtime
+(`bunVersion: 1.4.x`), builds via Turborepo, and rewrites every path to `api/server.ts`.
+See docs/development/vercel-deployment.md for required env vars.
+
 ## Surface
 
 | Area | Endpoints |
