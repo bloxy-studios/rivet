@@ -9,18 +9,20 @@ import {
 } from "./credentials";
 
 describe("API key generation", () => {
-  it("produces rvk_-prefixed keys with a display prefix and a sha256 hash", () => {
-    const generated = generateApiKey();
+  it("produces rvk_-prefixed keys with a display prefix and a sha256 hash", async () => {
+    const generated = await generateApiKey();
     expect(generated.key).toMatch(/^rvk_[0-9a-f]{40}$/);
     expect(generated.key.startsWith(API_KEY_PREFIX)).toBe(true);
     expect(generated.keyPrefix).toBe(generated.key.slice(0, API_KEY_DISPLAY_PREFIX_LENGTH));
-    expect(generated.keyHash).toBe(hashApiKey(generated.key));
+    expect(generated.keyHash).toBe(await hashApiKey(generated.key));
     expect(generated.keyHash).toMatch(/^[0-9a-f]{64}$/);
     expect(generated.keyHash).not.toContain(generated.key);
   });
 
-  it("never repeats key material", () => {
-    const keys = new Set(Array.from({ length: 100 }, () => generateApiKey().key));
+  it("never repeats key material", async () => {
+    const keys = new Set(
+      (await Promise.all(Array.from({ length: 100 }, () => generateApiKey()))).map((g) => g.key),
+    );
     expect(keys.size).toBe(100);
   });
 });

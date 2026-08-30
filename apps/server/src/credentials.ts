@@ -1,14 +1,30 @@
-import { createHash, randomBytes } from "node:crypto";
-
 /**
  * Credential material generation (pure; unit-tested). Storage invariants come
  * from @rivet/database: API keys are stored hash-only; DSN public keys are
  * ingest-only credentials (ADR-0004).
+ *
+ * Deliberately built on Web Crypto (crypto.subtle / getRandomValues) rather
+ * than node:crypto: the platform globals are typed by `lib` and available on
+ * every runtime this app targets (Bun, Node 18+, edge), keeping the deployed
+ * import closure free of node builtins — which some hosted builders compile
+ * file-by-file without @types resolution.
  */
 
 export const API_KEY_PREFIX = "rvk_";
 /** Characters of the key shown in the UI to identify it (never the rest). */
 export const API_KEY_DISPLAY_PREFIX_LENGTH = 12;
+
+const encoder = new TextEncoder();
+
+function toHex(bytes: Uint8Array): string {
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function randomHex(byteLength: number): string {
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  return toHex(bytes);
+}
 
 export interface GeneratedApiKey {
   /** The full secret — returned to the caller exactly once, never stored. */
@@ -19,22 +35,23 @@ export interface GeneratedApiKey {
   keyHash: string;
 }
 
-export function hashApiKey(key: string): string {
-  return createHash("sha256").update(key).digest("hex");
+export async function hashApiKey(key: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(key));
+  return toHex(new Uint8Array(digest));
 }
 
-export function generateApiKey(): GeneratedApiKey {
-  const key = `${API_KEY_PREFIX}${randomBytes(20).toString("hex")}`;
+export async function generateApiKey(): Promise<GeneratedApiKey> {
+  const key = `${API_KEY_PREFIX}${randomHex(20)}`;
   return {
     key,
     keyPrefix: key.slice(0, API_KEY_DISPLAY_PREFIX_LENGTH),
-    keyHash: hashApiKey(key),
+    keyHash: await hashApiKey(key),
   };
 }
 
 /** 32-hex ingest credential embedded in SDK configuration. */
 export function generateDsnPublicKey(): string {
-  return randomBytes(16).toString("hex");
+  return randomHex(16);
 }
 
 /**

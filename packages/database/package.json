@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./migrate": "./src/migrate.ts",
     "./testing": "./src/testing.ts"
   },
   "scripts": {

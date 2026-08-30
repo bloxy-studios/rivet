@@ -47,7 +47,7 @@ export function apiKeysRoutes(deps: AppDeps): Hono<AppEnv> {
     const body = await parseJsonBody(c, createKeySchema);
     if (body.projectId) await requireProjectInOrg(deps.db, access.orgId, body.projectId);
 
-    const generated = generateApiKey();
+    const generated = await generateApiKey();
     const [row] = await deps.db
       .insert(schema.apiKeys)
       .values({

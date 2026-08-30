@@ -55,7 +55,7 @@ describe("API keys", () => {
       .select()
       .from(schema.apiKeys)
       .where(eq(schema.apiKeys.orgId, orgId));
-    expect(row?.keyHash).toBe(hashApiKey(key));
+    expect(row?.keyHash).toBe(await hashApiKey(key));
     expect(row?.keyHash).not.toBe(key);
     expect(row?.createdByUserId).toBe(owner.userId);
   });
