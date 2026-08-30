@@ -76,6 +76,26 @@ describe("seed", () => {
     expect(dsns[0]?.n).toBe(0);
   });
 
+  it("fails loudly when a fixed demo id already holds different fixture data", async () => {
+    // A row owns the fixed demo org ID but with foreign data: PK-targeted
+    // conflict handling would silently skip it and leave the documented
+    // demo org (slug "demo") unavailable — the seed must refuse instead.
+    await handle.db
+      .insert(schema.organizations)
+      .values({ id: DEMO.org, name: "Hijacked", slug: "hijacked" });
+
+    await expect(seed(handle.db)).rejects.toThrow(SeedConflictError);
+    await expect(seed(handle.db)).rejects.toThrow(/different data/);
+
+    // Atomic: the failed seed wrote nothing.
+    const [users, projects] = await Promise.all([
+      handle.db.select({ n: count() }).from(schema.users),
+      handle.db.select({ n: count() }).from(schema.projects),
+    ]);
+    expect(users[0]?.n).toBe(0);
+    expect(projects[0]?.n).toBe(0);
+  });
+
   it("is idempotent — re-running changes nothing", async () => {
     await seed(handle.db);
     const first = await snapshotCounts();

@@ -170,6 +170,141 @@ async function findConflicts(db: SeedableDatabase): Promise<string[]> {
     DEMO.dsn,
   );
 
+  // Reverse direction: a row may already OWN a fixed demo ID while carrying
+  // different fixture data. PK-targeted conflict handling would silently skip
+  // it and the seed would "succeed" without the documented demo tree — so any
+  // fixed-ID row must match its expected fixture exactly.
+  const expectRow = (
+    label: string,
+    rows: ReadonlyArray<Record<string, unknown>>,
+    expected: Record<string, unknown>,
+  ): void => {
+    for (const row of rows) {
+      for (const [field, value] of Object.entries(expected)) {
+        if (row[field] !== value) {
+          conflicts.push(
+            `${label} already exists with different data (${field} is ${JSON.stringify(row[field])}, expected ${JSON.stringify(value)})`,
+          );
+        }
+      }
+    }
+  };
+
+  expectRow(
+    `organization id ${DEMO.org}`,
+    await db
+      .select({ slug: schema.organizations.slug })
+      .from(schema.organizations)
+      .where(eq(schema.organizations.id, DEMO.org)),
+    { slug: "demo" },
+  );
+
+  for (const [id, email] of [
+    [DEMO.ownerUser, DEMO.ownerEmail],
+    [DEMO.developerUser, DEMO.developerEmail],
+  ] as const) {
+    expectRow(
+      `user id ${id}`,
+      await db
+        .select({ email: sql<string>`lower(${schema.users.email})` })
+        .from(schema.users)
+        .where(eq(schema.users.id, id)),
+      { email },
+    );
+  }
+
+  for (const [id, orgId, userId, role] of [
+    [DEMO.ownerMembership, DEMO.org, DEMO.ownerUser, "OWNER"],
+    [DEMO.developerMembership, DEMO.org, DEMO.developerUser, "DEVELOPER"],
+  ] as const) {
+    expectRow(
+      `membership id ${id}`,
+      await db
+        .select({
+          orgId: schema.memberships.orgId,
+          userId: schema.memberships.userId,
+          role: schema.memberships.role,
+        })
+        .from(schema.memberships)
+        .where(eq(schema.memberships.id, id)),
+      { orgId, userId, role },
+    );
+  }
+
+  expectRow(
+    `team id ${DEMO.team}`,
+    await db
+      .select({ orgId: schema.teams.orgId, slug: schema.teams.slug })
+      .from(schema.teams)
+      .where(eq(schema.teams.id, DEMO.team)),
+    { orgId: DEMO.org, slug: "platform" },
+  );
+
+  expectRow(
+    `team membership id ${DEMO.teamMembership}`,
+    await db
+      .select({
+        teamId: schema.teamMemberships.teamId,
+        orgId: schema.teamMemberships.orgId,
+        userId: schema.teamMemberships.userId,
+      })
+      .from(schema.teamMemberships)
+      .where(eq(schema.teamMemberships.id, DEMO.teamMembership)),
+    { teamId: DEMO.team, orgId: DEMO.org, userId: DEMO.developerUser },
+  );
+
+  expectRow(
+    `project id ${DEMO.project}`,
+    await db
+      .select({ orgId: schema.projects.orgId, slug: schema.projects.slug })
+      .from(schema.projects)
+      .where(eq(schema.projects.id, DEMO.project)),
+    { orgId: DEMO.org, slug: "demo-app" },
+  );
+
+  for (const [id, name] of [
+    [DEMO.envProduction, "production"],
+    [DEMO.envStaging, "staging"],
+    [DEMO.envDevelopment, "development"],
+  ] as const) {
+    expectRow(
+      `environment id ${id}`,
+      await db
+        .select({ projectId: schema.environments.projectId, name: schema.environments.name })
+        .from(schema.environments)
+        .where(eq(schema.environments.id, id)),
+      { projectId: DEMO.project, name },
+    );
+  }
+
+  for (const [id, name, criticality] of [
+    [DEMO.servicePayments, "payments", "CRITICAL"],
+    [DEMO.serviceApi, "api", "HIGH"],
+    [DEMO.serviceAnalytics, "analytics", "LOW"],
+  ] as const) {
+    expectRow(
+      `service id ${id}`,
+      await db
+        .select({
+          projectId: schema.services.projectId,
+          name: schema.services.name,
+          criticality: schema.services.criticality,
+        })
+        .from(schema.services)
+        .where(eq(schema.services.id, id)),
+      { projectId: DEMO.project, name, criticality },
+    );
+  }
+
+  expectRow(
+    `DSN id ${DEMO.dsn}`,
+    await db
+      .select({ projectId: schema.dsns.projectId, publicKey: schema.dsns.publicKey })
+      .from(schema.dsns)
+      .where(eq(schema.dsns.id, DEMO.dsn)),
+    { projectId: DEMO.project, publicKey: DEMO.dsnPublicKey },
+  );
+
   return conflicts;
 }
 
