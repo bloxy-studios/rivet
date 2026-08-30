@@ -3,11 +3,12 @@
  * Bun entry point — the only file that touches Bun APIs (ADR-0008).
  * Run with: bun apps/server/src/main.ts (or `bun run dev` for watch mode).
  *
- * Deliberately NOT named index.ts/server.ts: Vercel's Bun framework preset
- * detects Bun.serve at those magic paths and deploys a per-file transpilation
- * of the source tree whose workspace imports cannot resolve at runtime
- * (/var/task has no monorepo node_modules). The Vercel function is the
- * self-contained bundle built from vercel/entry.ts instead.
+ * This entry point never deploys to Vercel — the function there is the
+ * self-contained bundle built from vercel/entry.ts, and vercel.json pins
+ * `"framework": null` so no framework preset scans the source tree for a
+ * server entry. (Vercel's backend presets detect by dependency + well-known
+ * filenames — with `hono` in dependencies, src/app.ts alone triggers the
+ * Hono preset regardless of what this file is called.)
  */
 import { createServerFromEnv } from "./bootstrap";
 import { loadEnv } from "./env";

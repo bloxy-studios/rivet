@@ -24,10 +24,12 @@ optional). See `.env.example` at the repository root.
 ## Deployment
 
 Primary: self-hosted (Docker Compose, PR-5). A Vercel deployment is also supported via
-the `/api` Bun Function model — `vercel.json` pins Bun 1.4 for installs (the default
-build image cannot read this repo's lockfile), selects the Bun runtime
-(`bunVersion: 1.4.x`), builds via Turborepo, and rewrites every path to `api/server.ts`.
-See docs/development/vercel-deployment.md for required env vars.
+the Build Output API — `vercel.json` pins `"framework": null` (with `hono` in
+dependencies Vercel's Hono preset would otherwise deploy an unresolvable trace of the
+source tree), installs Bun 1.4 (the default build image cannot read this repo's
+lockfile), builds via Turborepo, then bundles `vercel/entry.ts` into
+`.vercel/output/functions/index.func/` as the single Bun-runtime function every path
+routes to. See docs/development/vercel-deployment.md for the mechanism and env vars.
 
 ## Surface
 

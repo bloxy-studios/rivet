@@ -1,12 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
   "bunVersion": "1.4.x",
   "installCommand": "cd ../.. && curl -fsSL https://bun.sh/install | bash -s bun-v1.4.0 && ~/.bun/bin/bun install --frozen-lockfile",
-  "buildCommand": "cd ../.. && PATH=$HOME/.bun/bin:$PATH bunx turbo run build --filter=server && cd apps/server && ~/.bun/bin/bun build vercel/entry.ts --target=bun --outfile=api/server.js",
-  "rewrites": [
-    {
-      "source": "/:path*",
-      "destination": "/api/server"
-    }
-  ]
+  "buildCommand": "cd ../.. && PATH=$HOME/.bun/bin:$PATH bunx turbo run build --filter=server && cd apps/server && mkdir -p .vercel/output/functions/index.func .vercel/output/static && ~/.bun/bin/bun build vercel/entry.ts --target=bun --outfile=.vercel/output/functions/index.func/index.js && cp vercel/vc-config.json .vercel/output/functions/index.func/.vc-config.json && cp vercel/output-config.json .vercel/output/config.json"
 }

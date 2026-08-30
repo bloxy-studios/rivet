@@ -10,7 +10,19 @@ Create **one Vercel project per app** and set the Root Directory to that app:
 | --- | --- | --- |
 | `web` | `apps/web` | Next.js |
 | `docs` | `apps/docs` | Next.js |
-| `server` | `apps/server` | Bun Function (`/api` model): `api/server.ts` runs the Hono app on the Bun runtime (`bunVersion: 1.4.x`), and a catch-all rewrite funnels every path to it |
+| `server` | `apps/server` | Bun Function via the [Build Output API](https://vercel.com/docs/build-output-api): the buildCommand bundles `vercel/entry.ts` (self-contained, `bun build --target=bun`) into `.vercel/output/functions/index.func/` on the Bun runtime, with a catch-all route to it |
+
+### Why the server pins `"framework": null`
+
+The server's `vercel.json` explicitly disables framework detection. With `hono` in
+`dependencies`, Vercel auto-selects its **Hono preset** (detection is dependency +
+well-known-filename based; `src/app.ts` importing hono is enough — entry file names
+don't matter). That preset's builder deploys its own trace of the source tree, where
+workspace imports like `@rivet/auth` cannot resolve at runtime (`/var/task` has no
+monorepo layout), and routes every path to that broken function. `"framework": null`
+plus an explicit Build Output API emit leaves nothing to detection: the committed
+`vercel/vc-config.json` (runtime `bun1.4.x`) and `vercel/output-config.json` (routes)
+declare the one function Vercel deploys.
 
 Each app ships a `vercel.json` that:
 
@@ -24,8 +36,9 @@ Each app ships a `vercel.json` that:
 When importing the Git repository in the Vercel dashboard:
 
 1. Select the repository
-2. Set **Root Directory** to `apps/web` or `apps/docs`
-3. Leave Framework Preset as Next.js
+2. Set **Root Directory** to the app's directory
+3. Framework Preset: Next.js for `web`/`docs`; **Other** for `server` (its
+   `vercel.json` pins `"framework": null` — the dashboard setting is the backstop)
 4. Do not override the Install or Build commands — `vercel.json` already sets them
 
 The `web` project requires `RIVET_API_URL` (the rivet-server deployment URL) so its

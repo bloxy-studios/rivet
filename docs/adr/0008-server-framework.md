@@ -23,9 +23,13 @@ already use.
    drive `app.request()` in-process with no listening socket, and the same app object
    would run on Node or edge runtimes unchanged.
 2. **`Bun.serve` appears only in the entry point** (`src/index.ts` at acceptance;
-   *amended 2026-08-30:* renamed to `src/main.ts` because Vercel's Bun framework
-   preset auto-detects `Bun.serve` at magic entry paths and deploys unresolvable
-   per-file transpilations — see PR #10). Everything else —
+   *amended 2026-08-30:* renamed to `src/main.ts` during the Vercel deployment
+   investigation, PR #10. The capture mechanism turned out to be dependency-based:
+   with `hono` in dependencies, Vercel's Hono preset claims any well-known filename
+   importing it and deploys its own unresolvable trace of the source tree, so the
+   entry's name was never the trigger. Deployments pin `"framework": null` and
+   declare the function via the Build Output API instead — see
+   docs/development/vercel-deployment.md). Everything else —
    `createApp(deps)`, routes, middleware — is runtime-agnostic and dependency-injected
    (db, auth, logger), which is what makes the PGlite-backed test suite possible.
 3. **Validation is zod (pinned, currently 4.5.4) with a 20-line local helper**, not a

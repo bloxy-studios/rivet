@@ -1,0 +1,7 @@
+{
+  "runtime": "bun1.4.x",
+  "handler": "index.js",
+  "launcherType": "Nodejs",
+  "shouldAddHelpers": false,
+  "shouldAddSourcemapSupport": false
+}

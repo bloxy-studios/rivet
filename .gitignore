@@ -24,5 +24,5 @@ coverage/
 *.log
 .DS_Store
 
-# generated Vercel function bundle (built by apps/server buildCommand)
-apps/server/api/
+# Vercel (CLI project links and the Build Output emitted by apps/server buildCommand)
+.vercel/
