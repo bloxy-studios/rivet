@@ -1,5 +1,5 @@
 {
-  "id": "87a77b25-f2fc-401c-942c-df30cc86d70f",
+  "id": "e1d161a9-5951-40f0-bb30-8bdc7ebe7f74",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -120,15 +120,6 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "api_keys_project_id_projects_id_fk": {
-          "name": "api_keys_project_id_projects_id_fk",
-          "tableFrom": "api_keys",
-          "tableTo": "projects",
-          "columnsFrom": ["project_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
         "api_keys_created_by_user_id_users_id_fk": {
           "name": "api_keys_created_by_user_id_users_id_fk",
           "tableFrom": "api_keys",
@@ -136,6 +127,15 @@
           "columnsFrom": ["created_by_user_id"],
           "columnsTo": ["id"],
           "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "api_keys_project_org_fk": {
+          "name": "api_keys_project_org_fk",
+          "tableFrom": "api_keys",
+          "tableTo": "projects",
+          "columnsFrom": ["project_id", "org_id"],
+          "columnsTo": ["id", "org_id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -387,7 +387,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "projects_id_org_unique": {
+          "name": "projects_id_org_unique",
+          "nullsNotDistinct": false,
+          "columns": ["id", "org_id"]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -513,27 +519,6 @@
         }
       },
       "indexes": {
-        "memberships_org_user_unique": {
-          "name": "memberships_org_user_unique",
-          "columns": [
-            {
-              "expression": "org_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "memberships_user_idx": {
           "name": "memberships_user_idx",
           "columns": [
@@ -571,7 +556,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "memberships_org_user_unique": {
+          "name": "memberships_org_user_unique",
+          "nullsNotDistinct": false,
+          "columns": ["org_id", "user_id"]
+        }
+      },
       "policies": {},
       "checkConstraints": {
         "memberships_role_check": {
@@ -660,6 +651,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "org_id": {
+          "name": "org_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "user_id": {
           "name": "user_id",
           "type": "uuid",
@@ -698,21 +695,21 @@
         }
       },
       "foreignKeys": {
-        "team_memberships_team_id_teams_id_fk": {
-          "name": "team_memberships_team_id_teams_id_fk",
+        "team_memberships_team_org_fk": {
+          "name": "team_memberships_team_org_fk",
           "tableFrom": "team_memberships",
           "tableTo": "teams",
-          "columnsFrom": ["team_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": ["team_id", "org_id"],
+          "columnsTo": ["id", "org_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "team_memberships_user_id_users_id_fk": {
-          "name": "team_memberships_user_id_users_id_fk",
+        "team_memberships_org_member_fk": {
+          "name": "team_memberships_org_member_fk",
           "tableFrom": "team_memberships",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "tableTo": "memberships",
+          "columnsFrom": ["org_id", "user_id"],
+          "columnsTo": ["org_id", "user_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -795,7 +792,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "teams_id_org_unique": {
+          "name": "teams_id_org_unique",
+          "nullsNotDistinct": false,
+          "columns": ["id", "org_id"]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

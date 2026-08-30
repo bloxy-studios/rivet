@@ -178,6 +178,103 @@ describe("credential constraints", () => {
   });
 });
 
+describe("tenant consistency (composite foreign keys)", () => {
+  it("rejects API keys whose project belongs to a different organization", async () => {
+    const orgA = await insertOrg("org-a");
+    const orgB = await insertOrg("org-b");
+    const projectB = await insertProject(orgB.id, "b-app");
+    await expect(
+      handle.db.insert(schema.apiKeys).values({
+        orgId: orgA.id,
+        projectId: projectB.id,
+        name: "cross-tenant",
+        keyHash: "x".repeat(64),
+        keyPrefix: "rvk_x",
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("accepts same-org project keys and org-wide keys (null project)", async () => {
+    const org = await insertOrg();
+    const project = await insertProject(org.id);
+    await expect(
+      handle.db.insert(schema.apiKeys).values({
+        orgId: org.id,
+        projectId: project.id,
+        name: "scoped",
+        keyHash: "a".repeat(64),
+        keyPrefix: "rvk_a",
+      }),
+    ).resolves.toBeDefined();
+    await expect(
+      handle.db.insert(schema.apiKeys).values({
+        orgId: org.id,
+        name: "org-wide",
+        keyHash: "b".repeat(64),
+        keyPrefix: "rvk_b",
+      }),
+    ).resolves.toBeDefined();
+  });
+
+  it("requires team members to be members of the team's organization", async () => {
+    const orgA = await insertOrg("org-a");
+    const orgB = await insertOrg("org-b");
+    const [team] = await handle.db
+      .insert(schema.teams)
+      .values({ orgId: orgA.id, name: "Platform", slug: "platform" })
+      .returning();
+    if (!team) throw new Error("team insert returned nothing");
+    const outsider = await insertUser("outsider@example.com");
+    await handle.db
+      .insert(schema.memberships)
+      .values({ orgId: orgB.id, userId: outsider.id, role: "DEVELOPER" });
+
+    // Not a member of org A → rejected.
+    await expect(
+      handle.db
+        .insert(schema.teamMemberships)
+        .values({ teamId: team.id, orgId: orgA.id, userId: outsider.id }),
+    ).rejects.toThrow();
+    // Claiming the team under org B (which the user IS in) → rejected: team belongs to org A.
+    await expect(
+      handle.db
+        .insert(schema.teamMemberships)
+        .values({ teamId: team.id, orgId: orgB.id, userId: outsider.id }),
+    ).rejects.toThrow();
+
+    // After joining org A, the same insert succeeds.
+    await handle.db
+      .insert(schema.memberships)
+      .values({ orgId: orgA.id, userId: outsider.id, role: "DEVELOPER" });
+    await expect(
+      handle.db
+        .insert(schema.teamMemberships)
+        .values({ teamId: team.id, orgId: orgA.id, userId: outsider.id }),
+    ).resolves.toBeDefined();
+  });
+
+  it("cascades a user's team memberships when their org membership is removed", async () => {
+    const org = await insertOrg();
+    const user = await insertUser("leaver@example.com");
+    await handle.db
+      .insert(schema.memberships)
+      .values({ orgId: org.id, userId: user.id, role: "DEVELOPER" });
+    const [team] = await handle.db
+      .insert(schema.teams)
+      .values({ orgId: org.id, name: "Core", slug: "core" })
+      .returning();
+    if (!team) throw new Error("team insert returned nothing");
+    await handle.db
+      .insert(schema.teamMemberships)
+      .values({ teamId: team.id, orgId: org.id, userId: user.id });
+
+    await handle.db.delete(schema.memberships).where(eq(schema.memberships.userId, user.id));
+
+    const remaining = await handle.db.select({ n: count() }).from(schema.teamMemberships);
+    expect(remaining[0]?.n).toBe(0);
+  });
+});
+
 describe("deletion semantics (org isolation)", () => {
   it("deleting an organization cascades its tree but never touches global users", async () => {
     const org = await insertOrg("doomed");

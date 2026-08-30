@@ -1,5 +1,13 @@
 import { sql } from "drizzle-orm";
-import { index, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import {
+  foreignKey,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { projects } from "./projects";
 import { organizations, users } from "./tenancy";
 
@@ -12,6 +20,13 @@ const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull(
  * in the UI so users can identify keys without exposing them.
  * Revocation is a timestamp, preserving the audit trail; revoked keys are
  * never deleted while their organization exists.
+ *
+ * Tenant consistency: `project_id` is not a plain reference — the composite
+ * foreign key (project_id, org_id) → projects(id, org_id) makes it
+ * impossible to attach a key to another organization's project, so
+ * authorization code can trust both fields. A NULL project_id (org-wide
+ * key) skips the composite check by SQL MATCH SIMPLE semantics, while
+ * org_id integrity is still guaranteed by its own foreign key.
  */
 export const apiKeys = pgTable(
   "api_keys",
@@ -21,7 +36,7 @@ export const apiKeys = pgTable(
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
     /** Optional project scoping; NULL means org-wide. */
-    projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+    projectId: uuid("project_id"),
     name: text("name").notNull(),
     keyHash: text("key_hash").notNull(),
     keyPrefix: text("key_prefix").notNull(),
@@ -36,6 +51,11 @@ export const apiKeys = pgTable(
   (t) => [
     uniqueIndex("api_keys_key_hash_unique").on(t.keyHash),
     index("api_keys_org_idx").on(t.orgId),
+    foreignKey({
+      name: "api_keys_project_org_fk",
+      columns: [t.projectId, t.orgId],
+      foreignColumns: [projects.id, projects.orgId],
+    }).onDelete("cascade"),
   ],
 );
 

@@ -1,6 +1,6 @@
 import { SERVICE_CRITICALITIES } from "@rivet/types";
 import { sql } from "drizzle-orm";
-import { check, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { check, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { organizations } from "./tenancy";
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
@@ -10,6 +10,11 @@ const updatedAt = () =>
     .defaultNow()
     .$onUpdate(() => new Date());
 
+/**
+ * The (id, org_id) UNIQUE constraint is deliberately redundant with the
+ * primary key: it is the composite foreign-key target that lets rows such
+ * as api_keys prove their project belongs to the same organization.
+ */
 export const projects = pgTable(
   "projects",
   {
@@ -22,7 +27,10 @@ export const projects = pgTable(
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [uniqueIndex("projects_org_slug_unique").on(t.orgId, t.slug)],
+  (t) => [
+    uniqueIndex("projects_org_slug_unique").on(t.orgId, t.slug),
+    unique("projects_id_org_unique").on(t.id, t.orgId),
+  ],
 );
 
 /**

@@ -12,16 +12,23 @@ Postgres) and [ADR-0006](../../docs/adr/0006-orm-and-migrations.md) (how).
 | `users` | Global identities (auth lands in PR-2 / ADR-0007) | unique `lower(email)` |
 | `organizations` | Tenancy root | unique `slug` |
 | `memberships` | User↔org with role | unique `(org, user)`; `role` CHECK from `@rivet/types` `ORG_ROLES` |
-| `teams` / `team_memberships` | Org-scoped grouping | unique `(org, slug)` / `(team, user)` |
+| `teams` / `team_memberships` | Org-scoped grouping | unique `(org, slug)` / `(team, user)`; composite FKs force the team AND an org membership to share the row's org — leaving the org cascades you out of its teams |
 | `projects` | Monitored applications | unique `(org, slug)` |
 | `environments` | production / staging / … | unique `(project, name)` |
 | `services` | Deployable units with business criticality | unique `(project, name)`; `criticality` CHECK from `SERVICE_CRITICALITIES` |
-| `api_keys` | Management-API credentials — **hash only**, never key material | unique `key_hash`; revocation via `revoked_at` |
+| `api_keys` | Management-API credentials — **hash only**, never key material | unique `key_hash`; revocation via `revoked_at`; composite FK `(project_id, org_id) → projects(id, org_id)` — a key can never reference another org's project (NULL project = org-wide key) |
 | `dsns` | Public ingest credentials (ADR-0004) | unique `public_key`, project-bound |
 
 Conventions: `uuid` PKs (`gen_random_uuid()`), `timestamptz` timestamps, snake_case
 columns, `ON DELETE CASCADE` within an org's tree (deleting an org really deletes its
 data; users are global and survive), `SET NULL` for attribution links.
+
+**Tenant consistency is structural.** Cross-org relationships are impossible by
+construction, not convention: tables that carry both an org and an org-owned reference
+enforce the pair with composite foreign keys (against deliberately redundant
+`(id, org_id)` UNIQUE constraints on the parent). Authorization code may trust that
+`api_keys.project_id` belongs to `api_keys.org_id`, and that every team member is a
+current member of the team's organization.
 
 Environments and services are both project-scoped: the conceptual chain
 Org → Project → Environment → Service → Event is a *query-scoping* chain — a service
@@ -46,6 +53,16 @@ bun run db:generate   # after editing src/schema/ — regenerate SQL, commit bot
 3. Add/extend constraint tests in `src/schema.test.ts`.
 4. Commit schema + migration + journal together. Never edit an applied migration;
    add a new one.
+
+## Seed semantics
+
+`bun run db:seed` is **atomic and idempotent**: the whole run executes in one
+transaction; natural keys (org slug, demo emails, DSN key, …) are validated first and
+the seed refuses with a `SeedConflictError` — writing nothing — if foreign rows already
+own them under different IDs. Re-running over an existing demo tree is a clean no-op.
+The dev compose file publishes Postgres on **loopback only** (`127.0.0.1:5432`); the
+fixed `rivet`/`rivet` credentials are for local development and must never be exposed
+beyond it.
 
 ## Testing
 
