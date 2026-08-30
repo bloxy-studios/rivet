@@ -1,5 +1,4 @@
 export * from "./client";
-export * from "./migrate";
 export * from "./schema";
 export * as schema from "./schema";
 export * from "./seed";
