@@ -49,6 +49,9 @@
       "name": "web",
       "version": "0.1.0",
       "dependencies": {
+        "@rivet/types": "workspace:*",
+        "@rivet/ui": "workspace:*",
+        "better-auth": "1.7.2",
         "next": "16.3.3",
         "react": "19.2.8",
         "react-dom": "19.2.8",
@@ -107,18 +110,22 @@
       "version": "0.0.0",
     },
     "packages/ui": {
-      "name": "@repo/ui",
+      "name": "@rivet/ui",
       "version": "0.0.0",
       "dependencies": {
-        "react": "19.2.8",
-        "react-dom": "19.2.8",
+        "@rivet/types": "workspace:*",
       },
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
-        "@types/node": "26.3.0",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.5",
+        "react": "19.2.8",
+        "react-dom": "19.2.8",
         "typescript": "7.0.2",
+      },
+      "peerDependencies": {
+        "react": "^19",
+        "react-dom": "^19",
       },
     },
   },
@@ -318,13 +325,13 @@
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
-    "@repo/ui": ["@repo/ui@workspace:packages/ui"],
-
     "@rivet/auth": ["@rivet/auth@workspace:packages/auth"],
 
     "@rivet/database": ["@rivet/database@workspace:packages/database"],
 
     "@rivet/types": ["@rivet/types@workspace:packages/types"],
+
+    "@rivet/ui": ["@rivet/ui@workspace:packages/ui"],
 
     "@rolldown/binding-android-arm-eabi": ["@rolldown/binding-android-arm-eabi@1.2.6", "", { "os": "android", "cpu": "arm" }, "sha512-b+jTcARdTiFLI6jB4a5XjTm0RWd6KcRfQj/I2356fxUZemiho9zQLxo0RtCuMDAyKcLo6cEltkgbQp6d1+sjjQ=="],
 

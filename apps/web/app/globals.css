@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
+/* Tailwind must scan the shared UI package for class usage. */
+@source "../../../packages/ui/src";
+
+/*
+ * Rivet design tokens (docs/design/design-language.md).
+ * Dark-first: :root carries the dark palette; [data-theme="light"] overrides.
+ * Color is semantics (severity, status, state, diffs) — never decoration —
+ * and never the only signal: chips always carry their label text.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+
+  --bg: #0b0d10;
+  --surface: #101318;
+  --surface-raised: #161a21;
+  --border: #232936;
+  --text: #e6eaf2;
+  --text-muted: #98a2b3;
+
+  --accent: #6e9bff;
+  --accent-strong: #3d6dff;
+  --danger: #ff6166;
+
+  --sev0: #ff5d5d;
+  --sev1: #ff8589;
+  --sev2: #f5a524;
+  --sev3: #f5d90a;
+  --sev4: #8b93a5;
+
+  --healthy: #30d158;
+  --degraded: #f5a524;
+  --failing: #ff6166;
+
+  --state-new: #6e9bff;
+  --state-ongoing: #98a2b3;
+  --state-regressed: #c084fc;
+  --state-resolved: #30d158;
+
+  --diff-add: #30d158;
+  --diff-remove: #ff6166;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --surface: #f8fafc;
+  --surface-raised: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+
+  --accent: #2563eb;
+  --accent-strong: #2563eb;
+  --danger: #dc2626;
+
+  --sev0: #dc2626;
+  --sev1: #ef4444;
+  --sev2: #d97706;
+  --sev3: #ca8a04;
+  --sev4: #64748b;
+
+  --healthy: #16a34a;
+  --degraded: #d97706;
+  --failing: #dc2626;
+
+  --state-new: #2563eb;
+  --state-ongoing: #64748b;
+  --state-regressed: #9333ea;
+  --state-resolved: #16a34a;
+
+  --diff-add: #16a34a;
+  --diff-remove: #dc2626;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-danger: var(--danger);
+  --color-sev0: var(--sev0);
+  --color-sev1: var(--sev1);
+  --color-sev2: var(--sev2);
+  --color-sev3: var(--sev3);
+  --color-sev4: var(--sev4);
+  --color-healthy: var(--healthy);
+  --color-degraded: var(--degraded);
+  --color-failing: var(--failing);
+  --color-state-new: var(--state-new);
+  --color-state-ongoing: var(--state-ongoing);
+  --color-state-regressed: var(--state-regressed);
+  --color-state-resolved: var(--state-resolved);
+  --color-diff-add: var(--diff-add);
+  --color-diff-remove: var(--diff-remove);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* Functional motion only (design language): honor reduced motion globally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: reduced-motion must override all component styles */
+    animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: reduced-motion must override all component styles */
+    animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: reduced-motion must override all component styles */
+    transition-duration: 0.01ms !important;
+  }
 }
