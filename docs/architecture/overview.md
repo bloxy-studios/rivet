@@ -69,6 +69,7 @@ rivet/
 ├── packages/
 │   ├── types/          # @rivet/types — shared domain primitives (current)
 │   ├── database/       # @rivet/database — control-plane schema + migrations (current)
+│   ├── auth/           # @rivet/auth — identity engine + session/role guards (current)
 │   ├── validation/     # @rivet/validation — event envelope schemas — Phase 2
 │   ├── telemetry-store/# @rivet/telemetry-store — ClickHouse access layer — Phase 2–3
 │   ├── grouping/       # @rivet/grouping — pure grouping engine — Phase 2

@@ -1,6 +1,7 @@
 import { ORG_ROLES } from "@rivet/types";
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   check,
   foreignKey,
   index,
@@ -32,11 +33,17 @@ export const users = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     email: text("email").notNull(),
     name: text("name"),
+    /** Maintained by the identity engine (ADR-0007); false until verified. */
+    emailVerified: boolean("email_verified").notNull().default(false),
+    /** Optional avatar URL (set by OAuth providers or the user). */
+    image: text("image"),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
   (t) => [
-    // Case-insensitive uniqueness without the citext extension.
+    // Case-insensitive uniqueness without the citext extension. The identity
+    // engine normalizes emails to lowercase; this index also protects
+    // non-engine write paths.
     uniqueIndex("users_email_lower_unique").on(sql`lower(${t.email})`),
   ],
 );
