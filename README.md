@@ -45,16 +45,15 @@ production changes. That gate is not a setting — it is an architectural invari
 
 ## Status
 
-Rivet is **pre-alpha**. The repository currently contains the project foundation:
-governance, architecture decision records, the build plan, design language, shared
-domain primitives (`@rivet/types`), and the monorepo toolchain. It is not yet a usable
-monitoring product. Follow the [roadmap](./ROADMAP.md) and the
+Rivet is **pre-alpha**. The foundation (governance, ADRs, toolchain, design language)
+is merged and Phase 1 is underway: the control-plane database, authentication, and the
+API server exist with full test batteries. It is not yet a usable monitoring product. Follow the [roadmap](./ROADMAP.md) and the
 [phase plan](./docs/plan/phase-plan.md).
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 0 | Foundation: governance, ADRs, toolchain, design language | 🚧 in review |
-| 1 | OSS platform core: auth, orgs/projects, self-hosting | queued |
+| 0 | Foundation: governance, ADRs, toolchain, design language | ✅ merged |
+| 1 | OSS platform core: auth, orgs/projects, self-hosting | 🚧 in progress |
 | 2 | Error monitoring: ingestion, grouping, issues, SDK | queued |
 | 3 | Observability: OTLP traces/logs/metrics, releases | queued |
 | 4 | Integrations: GitHub, Slack, Telegram, email, webhooks | queued |
@@ -77,8 +76,9 @@ bun run check        # lint + typecheck + tests
 bun run dev          # runs the (placeholder) web and docs apps
 ```
 
-What works today: the toolchain, the shared `@rivet/types` package and its invariant
-tests, and two placeholder Next.js apps. Everything else lands rung by rung — see the
+What works today: the toolchain; `@rivet/types`, `@rivet/database`, and `@rivet/auth`
+with their test batteries; the control-plane API server (`apps/server`: auth, org/project
+CRUD, API-key and DSN issuance); and two placeholder Next.js apps. Everything else lands rung by rung — see the
 [phase plan](./docs/plan/phase-plan.md). Commands in this README are CI-verified; if a
 documented command does not work, that is a bug — please report it.
 
@@ -88,11 +88,15 @@ documented command does not work, that is a bug — please report it.
 rivet/
 ├── apps/
 │   ├── web/          # Rivet web UI (placeholder — becomes the product shell in Phase 1)
+│   ├── server/       # Control-plane API: auth, tenant CRUD, credential issuance (current)
 │   └── docs/         # Documentation site (placeholder)
 ├── packages/
 │   ├── types/        # @rivet/types — shared domain primitives + safety invariants
+│   ├── database/     # @rivet/database — control-plane schema, migrations, seed
+│   ├── auth/         # @rivet/auth — identity engine + session/role guards
 │   ├── typescript-config/  # shared tsconfig presets (@repo/*: starter tooling)
 │   └── ui/           # shared React components (placeholder — becomes @rivet/ui)
+├── infrastructure/   # dev compose (Postgres); full self-host stack lands in PR-5
 ├── docs/
 │   ├── architecture/ # system architecture
 │   ├── adr/          # architecture decision records
@@ -103,7 +107,7 @@ rivet/
 └── .github/          # CI, issue and PR templates
 ```
 
-Planned additions (`apps/server`, `apps/cli`, `packages/database`, `packages/agent-core`,
+Planned additions (`apps/cli`, `packages/agent-core`,
 `sdks/*`, `infrastructure/*`, `examples/*`) are introduced by their phases — directories
 appear when they contain something real.
 

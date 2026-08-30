@@ -26,6 +26,7 @@ code or a reason to supersede the ADR, never something to merge quietly.
 | [0005](./0005-agent-safety-invariants.md) | Agent safety invariants: capabilities, approval gate, sandbox, audit | Accepted |
 | [0006](./0006-orm-and-migrations.md) | Drizzle ORM + postgres.js, committed SQL migrations, PGlite-backed tests | Accepted |
 | [0007](./0007-authentication.md) | Better Auth as identity engine; Rivet memberships as the only authorization authority | Accepted |
+| [0008](./0008-server-framework.md) | Hono on Bun for the server (fetch-native, runtime-portable) | Accepted |
 
 ## Queued decisions
 
@@ -35,7 +36,6 @@ speculation:
 
 | # | Decision | Phase |
 | --- | --- | --- |
-| 0008 | Server framework for api/ingest (Bun-native HTTP) | 1 |
 | 0009 | Job queue / scheduling runtime (Postgres-backed first?) | 2 |
 | 0010 | Grouping algorithm v1 (fingerprint strategy) | 2 |
 | 0011 | Search query grammar | 2 |

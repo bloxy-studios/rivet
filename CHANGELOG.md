@@ -10,6 +10,12 @@ once versioned releases begin.
 
 ### Added
 
+- `apps/server`: the control-plane API (ADR-0008 — Hono, fetch-native, Bun
+  entry): health/readiness probes, mounted identity handler, org/project/
+  environment/service CRUD behind the membership role matrix, API-key
+  issuance (hash-only storage, key returned once) and DSN issuance with
+  rendered DSN URLs, structured request logging with request ids, an origin
+  guard for cookie-authenticated mutations, and an honest OpenAPI stub.
 - `@rivet/auth`: authentication foundation (ADR-0007) — Better Auth as the
   identity engine mapped onto the control-plane schema, scrypt password
   hashing, database-backed cookie sessions, CSRF origin checks pinned on in
