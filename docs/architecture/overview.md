@@ -64,7 +64,7 @@ rivet/
 ├── apps/
 │   ├── web/            # product UI (Next.js) — shell lands Phase 1
 │   ├── docs/           # documentation site
-│   ├── server/         # API + ingest + worker (single Bun process, splittable) — Phase 1–2
+│   ├── server/         # API + ingest + worker (single Bun process, splittable) — api module current
 │   └── cli/            # rivet CLI — begins Phase 2, grows per phase
 ├── packages/
 │   ├── types/          # @rivet/types — shared domain primitives (current)
