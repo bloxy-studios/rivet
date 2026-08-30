@@ -20,7 +20,8 @@ well-known-filename based; `src/app.ts` importing hono is enough — entry file 
 don't matter). That preset's builder deploys its own trace of the source tree, where
 workspace imports like `@rivet/auth` cannot resolve at runtime (`/var/task` has no
 monorepo layout), and routes every path to that broken function. `"framework": null`
-plus an explicit Build Output API emit leaves nothing to detection: the committed
+plus an explicit Build Output API emit (`vercel/build.sh` — scripted because Vercel
+caps `buildCommand` at 256 characters) leaves nothing to detection: the committed
 `vercel/vc-config.json` (runtime `bun1.4.x`) and `vercel/output-config.json` (routes)
 declare the one function Vercel deploys.
 

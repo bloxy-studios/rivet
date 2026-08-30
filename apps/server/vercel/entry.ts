@@ -2,10 +2,11 @@
 /**
  * Vercel entry point — source of the Build Output API function.
  *
- * The buildCommand in vercel.json bundles this file (self-contained,
- * `bun build --target=bun`) into `.vercel/output/functions/index.func/` and
- * copies the committed `vc-config.json` / `output-config.json` beside it, so
- * the deployment is fully declared by the Build Output API: one Bun Function,
+ * vercel/build.sh (invoked by vercel.json's buildCommand) bundles this file
+ * (self-contained, `bun build --target=bun`) into
+ * `.vercel/output/functions/index.func/` and copies the committed
+ * `vc-config.json` / `output-config.json` beside it, so the deployment is
+ * fully declared by the Build Output API: one Bun Function,
  * a catch-all route to it, and nothing left to framework detection. Calling
  * `Bun.serve()` once at module startup is the documented handler contract
  * for Bun Functions; `port` is ignored on Vercel.
