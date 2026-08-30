@@ -17,6 +17,7 @@ Postgres) and [ADR-0006](../../docs/adr/0006-orm-and-migrations.md) (how).
 | `environments` | production / staging / … | unique `(project, name)` |
 | `services` | Deployable units with business criticality | unique `(project, name)`; `criticality` CHECK from `SERVICE_CRITICALITIES` |
 | `api_keys` | Management-API credentials — **hash only**, never key material | unique `key_hash`; revocation via `revoked_at`; composite FK `(project_id, org_id) → projects(id, org_id)` — a key can never reference another org's project (NULL project = org-wide key) |
+| `sessions` / `accounts` / `verifications` | Identity-engine tables consumed by `@rivet/auth` (ADR-0007) — identity only, never authorization | unique session `token`; scrypt hash in `accounts.password`; cascade on user deletion |
 | `dsns` | Public ingest credentials (ADR-0004) | unique `public_key`, project-bound |
 
 Conventions: `uuid` PKs (`gen_random_uuid()`), `timestamptz` timestamps, snake_case
