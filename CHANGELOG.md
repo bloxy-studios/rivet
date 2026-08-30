@@ -10,6 +10,15 @@ once versioned releases begin.
 
 ### Added
 
+- `@rivet/auth`: authentication foundation (ADR-0007) — Better Auth as the
+  identity engine mapped onto the control-plane schema, scrypt password
+  hashing, database-backed cookie sessions, CSRF origin checks pinned on in
+  every environment, and framework-agnostic `requireSession` /
+  `requireOrgRole` guards that enforce Rivet membership roles.
+- `@rivet/database`: identity tables (`sessions`, `accounts`,
+  `verifications`) and `users.email_verified` / `users.image` columns
+  (migration 0001).
+
 - `@rivet/database`: control-plane Postgres schema v1 (organizations, users,
   memberships, teams, projects, environments, services, API keys, DSNs) with
   committed SQL migrations, an idempotent demo seed, a postgres.js client
