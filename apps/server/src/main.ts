@@ -1,7 +1,13 @@
 /// <reference path="./runtime.d.ts" />
 /**
  * Bun entry point — the only file that touches Bun APIs (ADR-0008).
- * Run with: bun apps/server/src/index.ts (or `bun run dev` for watch mode).
+ * Run with: bun apps/server/src/main.ts (or `bun run dev` for watch mode).
+ *
+ * Deliberately NOT named index.ts/server.ts: Vercel's Bun framework preset
+ * detects Bun.serve at those magic paths and deploys a per-file transpilation
+ * of the source tree whose workspace imports cannot resolve at runtime
+ * (/var/task has no monorepo node_modules). The Vercel function is the
+ * self-contained bundle built from vercel/entry.ts instead.
  */
 import { createServerFromEnv } from "./bootstrap";
 import { loadEnv } from "./env";

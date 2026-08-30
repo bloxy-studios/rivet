@@ -1,20 +1,23 @@
-/// <reference path="./runtime.d.ts" />
+/// <reference path="../src/runtime.d.ts" />
 /**
  * Vercel entry point (Bun runtime, `/api` deployment model).
  *
  * Vercel deploys this file as a single Bun Function; the catch-all rewrite in
  * vercel.json funnels every path to it, and the Hono app routes by the
- * original request URL. Local/self-hosted runs use src/index.ts instead —
- * this file exists only for Vercel and is intentionally thin.
+ * original request URL. Local/self-hosted runs use src/main.ts instead —
+ * this file exists only for Vercel, is intentionally thin, and lives outside
+ * src/ so the Bun framework preset never detects it as a server entry (the
+ * preset deploys per-file transpilations whose workspace imports cannot
+ * resolve at runtime).
  *
  * Required project env vars: DATABASE_URL, RIVET_AUTH_SECRET, RIVET_BASE_URL
  * (see .env.example at the repository root). A misconfigured deployment
  * still boots and answers every request with a 500 that names the missing
  * variables (names only, never values) instead of crash-looping opaquely.
  */
-import { createServerFromEnv } from "./bootstrap";
-import { loadEnv } from "./env";
-import { consoleLogger } from "./logging";
+import { createServerFromEnv } from "../src/bootstrap";
+import { loadEnv } from "../src/env";
+import { consoleLogger } from "../src/logging";
 
 let fetchHandler: (request: Request) => Response | Promise<Response>;
 
