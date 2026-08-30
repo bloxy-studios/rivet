@@ -7,7 +7,7 @@
     "declarationMap": false,
     "noEmit": true,
     "exactOptionalPropertyTypes": true,
-    "types": ["bun"]
+    "types": []
   },
-  "include": ["src", "api"]
+  "include": ["src"]
 }

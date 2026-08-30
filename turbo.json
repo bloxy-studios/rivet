@@ -5,7 +5,14 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"],
+      "passThroughEnv": [
+        "DATABASE_URL",
+        "RIVET_AUTH_SECRET",
+        "RIVET_BASE_URL",
+        "PORT",
+        "RIVET_TRUSTED_ORIGINS"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]

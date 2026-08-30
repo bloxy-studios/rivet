@@ -11,9 +11,9 @@
  * still boots and answers every request with a 500 that names the missing
  * variables (names only, never values) instead of crash-looping opaquely.
  */
-import { createServerFromEnv } from "../src/bootstrap";
-import { loadEnv } from "../src/env";
-import { consoleLogger } from "../src/logging";
+import { createServerFromEnv } from "./bootstrap";
+import { loadEnv } from "./env";
+import { consoleLogger } from "./logging";
 
 let fetchHandler: (request: Request) => Response | Promise<Response>;
 
