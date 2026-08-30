@@ -9,5 +9,5 @@
     "exactOptionalPropertyTypes": true,
     "types": []
   },
-  "include": ["src"]
+  "include": ["src", "vercel"]
 }

@@ -22,7 +22,10 @@ already use.
    fetch-standard end to end: `auth.handler(c.req.raw)` mounts in one line, tests
    drive `app.request()` in-process with no listening socket, and the same app object
    would run on Node or edge runtimes unchanged.
-2. **`Bun.serve` appears only in the entry point** (`src/index.ts`). Everything else —
+2. **`Bun.serve` appears only in the entry point** (`src/index.ts` at acceptance;
+   *amended 2026-08-30:* renamed to `src/main.ts` because Vercel's Bun framework
+   preset auto-detects `Bun.serve` at magic entry paths and deploys unresolvable
+   per-file transpilations — see PR #10). Everything else —
    `createApp(deps)`, routes, middleware — is runtime-agnostic and dependency-injected
    (db, auth, logger), which is what makes the PGlite-backed test suite possible.
 3. **Validation is zod (pinned, currently 4.5.4) with a 20-line local helper**, not a

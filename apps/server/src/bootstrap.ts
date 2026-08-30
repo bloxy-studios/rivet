@@ -16,7 +16,7 @@ export interface BootstrappedServer {
  * single place where environment values fan out into dependencies, so the
  * wiring itself is regression-testable (see bootstrap.test.ts: trusted
  * origins must reach BOTH the identity engine and the management API's
- * origin guard). The Bun-only entry point (index.ts) adds nothing but
+ * origin guard). The Bun-only entry point (main.ts) adds nothing but
  * Bun.serve and signal handling on top of this.
  */
 export function createServerFromEnv(

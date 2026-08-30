@@ -5,8 +5,8 @@
   "description": "Rivet control-plane API server: health, auth, tenant CRUD, credential issuance.",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts",
+    "dev": "bun --watch src/main.ts",
+    "start": "bun src/main.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit"
   },

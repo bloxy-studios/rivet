@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "bunVersion": "1.4.x",
   "installCommand": "cd ../.. && curl -fsSL https://bun.sh/install | bash -s bun-v1.4.0 && ~/.bun/bin/bun install --frozen-lockfile",
-  "buildCommand": "cd ../.. && PATH=$HOME/.bun/bin:$PATH bunx turbo run build --filter=server && cd apps/server && ~/.bun/bin/bun build src/vercel-entry.ts --target=bun --outfile=api/server.js",
+  "buildCommand": "cd ../.. && PATH=$HOME/.bun/bin:$PATH bunx turbo run build --filter=server && cd apps/server && ~/.bun/bin/bun build vercel/entry.ts --target=bun --outfile=api/server.js",
   "rewrites": [
     {
       "source": "/:path*",
