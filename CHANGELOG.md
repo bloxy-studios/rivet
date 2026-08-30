@@ -10,6 +10,14 @@ once versioned releases begin.
 
 ### Added
 
+- `apps/web`: the product shell (design tokens per the design language —
+  dark-first with light parity, severity/status/state palettes, Geist +
+  mono for data), auth screens against the identity engine, organization
+  and project flows, DSN issue/copy, org API keys (shown once), left nav
+  with phase-labeled disabled entries, and a ⌘K command palette skeleton.
+- `@rivet/ui` (formerly `@repo/ui`): dependency-free primitives — Button,
+  Input, Field, Card, Chip (severity/criticality/role tones), Dialog,
+  EmptyState (with honest phase labels), CopyButton, Spinner.
 - `apps/server`: the control-plane API (ADR-0008 — Hono, fetch-native, Bun
   entry): health/readiness probes, mounted identity handler, org/project/
   environment/service CRUD behind the membership role matrix, API-key

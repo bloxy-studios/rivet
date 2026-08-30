@@ -84,6 +84,15 @@ bunx turbo run dev --filter=server
 `GET /healthz` is liveness; `GET /readyz` checks the database and reports 503 with a
 reason when it is unreachable. Endpoints and the role matrix: `apps/server/README.md`.
 
+## Running the web app
+
+```sh
+bunx turbo run dev --filter=web    # http://localhost:3000 (API proxied from :3001)
+```
+
+Set the API server's `RIVET_BASE_URL=http://localhost:3000` so identity cookies align
+with the web origin (details: `apps/web/README.md`).
+
 ## Troubleshooting
 
 - **`bun install` resolution errors** — check your Bun version (`bun --version` ≥

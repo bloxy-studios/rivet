@@ -28,6 +28,10 @@ When importing the Git repository in the Vercel dashboard:
 3. Leave Framework Preset as Next.js
 4. Do not override the Install or Build commands — `vercel.json` already sets them
 
+The `web` project requires `RIVET_API_URL` (the rivet-server deployment URL) so its
+same-origin `/api/*` proxy reaches the API; the server's `RIVET_BASE_URL` must be the
+web app's public origin so identity cookies and origin checks align.
+
 The `server` project additionally requires environment variables in Vercel project
 settings — `DATABASE_URL` (a hosted Postgres such as Neon/Supabase), `RIVET_AUTH_SECRET`,
 and `RIVET_BASE_URL` (the deployment URL). Until they are set, the deployment builds

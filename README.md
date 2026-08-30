@@ -77,8 +77,9 @@ bun run dev          # runs the (placeholder) web and docs apps
 ```
 
 What works today: the toolchain; `@rivet/types`, `@rivet/database`, and `@rivet/auth`
-with their test batteries; the control-plane API server (`apps/server`: auth, org/project
-CRUD, API-key and DSN issuance); and two placeholder Next.js apps. Everything else lands rung by rung — see the
+with their test batteries; the control-plane API server (`apps/server`); and the web
+shell (`apps/web`: sign-in, organizations, projects, DSN and API-key flows on the
+design-token system). Everything else lands rung by rung — see the
 [phase plan](./docs/plan/phase-plan.md). Commands in this README are CI-verified; if a
 documented command does not work, that is a bug — please report it.
 
@@ -87,7 +88,7 @@ documented command does not work, that is a bug — please report it.
 ```
 rivet/
 ├── apps/
-│   ├── web/          # Rivet web UI (placeholder — becomes the product shell in Phase 1)
+│   ├── web/          # Rivet web UI: auth, orgs/projects, credentials (current)
 │   ├── server/       # Control-plane API: auth, tenant CRUD, credential issuance (current)
 │   └── docs/         # Documentation site (placeholder)
 ├── packages/
@@ -95,7 +96,7 @@ rivet/
 │   ├── database/     # @rivet/database — control-plane schema, migrations, seed
 │   ├── auth/         # @rivet/auth — identity engine + session/role guards
 │   ├── typescript-config/  # shared tsconfig presets (@repo/*: starter tooling)
-│   └── ui/           # shared React components (placeholder — becomes @rivet/ui)
+│   └── ui/           # @rivet/ui — shared primitives on the token system (current)
 ├── infrastructure/   # dev compose (Postgres); full self-host stack lands in PR-5
 ├── docs/
 │   ├── architecture/ # system architecture
