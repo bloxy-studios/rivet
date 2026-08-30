@@ -1,3 +1,4 @@
+/// <reference path="./runtime.d.ts" />
 /**
  * Vercel entry point (Bun runtime, `/api` deployment model).
  *

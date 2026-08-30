@@ -1,3 +1,4 @@
+/// <reference path="./runtime.d.ts" />
 /**
  * Bun entry point — the only file that touches Bun APIs (ADR-0008).
  * Run with: bun apps/server/src/index.ts (or `bun run dev` for watch mode).
