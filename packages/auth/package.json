@@ -1,0 +1,24 @@
+{
+  "name": "@rivet/auth",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Rivet authentication: identity engine (Better Auth over the control-plane database) plus framework-agnostic session and organization-role guards.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rivet/database": "workspace:*",
+    "@rivet/types": "workspace:*",
+    "better-auth": "1.7.2",
+    "drizzle-orm": "0.45.2"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "26.3.0",
+    "typescript": "7.0.2"
+  }
+}
