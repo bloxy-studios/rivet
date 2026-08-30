@@ -18,7 +18,7 @@ Rules of the ladder:
 
 ---
 
-## Phase 0 — Foundation ✅ (this PR)
+## Phase 0 — Foundation ✅ (merged: PR [#1](https://github.com/bloxy-studios/rivet/pull/1))
 
 **PR-0 `chore/pr0-repository-foundation`** — governance (LICENSE Apache-2.0, NOTICE,
 GOVERNANCE, CONTRIBUTING with DCO, SECURITY, CODE_OF_CONDUCT), docs program (architecture
@@ -37,7 +37,7 @@ yet.
 
 | Rung | Scope | Key acceptance criteria |
 | --- | --- | --- |
-| PR-1 `feat/db-control-plane` | `@rivet/database`: Postgres schema v1 for orgs/users/memberships/teams/projects/environments/services/api-keys/DSNs + migration tooling + seed script. **ADR-0006** (ORM/migrations) decided here. | Migrations apply from zero and are re-runnable; seed creates a demo org; schema documented; unit tests on key constraints (org isolation, unique DSN). |
+| PR-1 `feat/db-control-plane` ✅ | `@rivet/database`: Postgres schema v1 for orgs/users/memberships/teams/projects/environments/services/api-keys/DSNs + migration tooling + seed script. **ADR-0006** (ORM/migrations) decided here. | Migrations apply from zero and are re-runnable (proven per test run on PGlite); seed creates a demo org idempotently; schema documented; constraint tests cover org isolation, role/criticality CHECKs, unique DSN. |
 | PR-2 `feat/auth-foundation` | Authentication & sessions (multi-tenant, self-host friendly: email+password, OAuth-ready). **ADR-0007** decided here. | Signup/login/logout/session-refresh work against compose Postgres; passwords hashed with a modern KDF; session fixation and CSRF covered by tests; role model (Owner/Admin/Developer/Viewer) enforced in middleware tests. |
 | PR-3 `feat/server-skeleton` | `apps/server`: Bun HTTP service (api module), health/readiness endpoints, org/project/env/service CRUD, API-key + DSN issuance, request logging, OpenAPI stub. **ADR-0008** (framework) decided here. | `bun dev` boots server; CRUD via authenticated API round-trips in integration tests; DSN parse/format helpers in `@rivet/types` or `@rivet/validation` with tests. |
 | PR-4 `feat/web-shell` | `apps/web` becomes the product shell: design tokens from the design language, auth screens, org/project switcher, left nav (Overview/Issues/Incidents/…), command palette (⌘K) skeleton, settings pages for projects/keys. `packages/ui` → `@rivet/ui` with the first real components. | Login → create project → copy DSN flows work end-to-end against the server; keyboard nav per design doc; dark and light themes; no dead buttons — nav items for future phases are visibly disabled with "lands in Phase N" affordance, not fake pages. |

@@ -1,0 +1,29 @@
+{
+  "name": "@rivet/database",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Rivet control-plane database: Drizzle schema, migrations, client factory, and seed for PostgreSQL.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "generate": "drizzle-kit generate",
+    "migrate": "bun ./src/cli/migrate.ts",
+    "seed": "bun ./src/cli/seed.ts"
+  },
+  "dependencies": {
+    "@rivet/types": "workspace:*",
+    "drizzle-orm": "0.45.2",
+    "postgres": "3.4.9"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "26.3.0",
+    "drizzle-kit": "0.31.10",
+    "typescript": "7.0.2"
+  }
+}

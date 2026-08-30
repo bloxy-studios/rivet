@@ -56,6 +56,20 @@ bun run check   # lint + typecheck + tests — must pass on a clean clone
   and justify it in the PR.
 - UI work follows [../design/design-language.md](../design/design-language.md).
 
+## Working on the database
+
+Tests need **no database and no Docker** — they run on PGlite (in-process Postgres).
+For running migrations/seed against a real server locally:
+
+```sh
+docker compose -f infrastructure/compose/dev.yml up -d
+export DATABASE_URL=postgres://rivet:rivet@localhost:5432/rivet
+bun run db:migrate && bun run db:seed
+```
+
+Schema changes: edit `packages/database/src/schema/`, run `bun run db:generate`,
+review and commit the generated SQL. Details: `packages/database/README.md`.
+
 ## Troubleshooting
 
 - **`bun install` resolution errors** — check your Bun version (`bun --version` ≥

@@ -1,0 +1,30 @@
+# Development dependencies for Rivet contributors.
+# Full self-hosting stack lands in Phase 1 / PR-5 (see docs/plan/phase-plan.md).
+#
+#   docker compose -f infrastructure/compose/dev.yml up -d
+#   export DATABASE_URL=postgres://rivet:rivet@localhost:5432/rivet
+
+name: rivet-dev
+
+services:
+  postgres:
+    # Major-pinned for dev convenience; the self-hosting stack (PR-5) pins digests.
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: rivet
+      POSTGRES_PASSWORD: rivet
+      POSTGRES_DB: rivet
+    ports:
+      # Loopback-only: never publish the dev database (fixed credentials)
+      # on externally reachable interfaces.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - rivet_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rivet -d rivet"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  rivet_pg_data:

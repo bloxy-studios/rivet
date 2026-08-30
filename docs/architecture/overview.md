@@ -68,8 +68,8 @@ rivet/
 │   └── cli/            # rivet CLI — begins Phase 2, grows per phase
 ├── packages/
 │   ├── types/          # @rivet/types — shared domain primitives (current)
+│   ├── database/       # @rivet/database — control-plane schema + migrations (current)
 │   ├── validation/     # @rivet/validation — event envelope schemas — Phase 2
-│   ├── database/       # @rivet/database — control-plane schema + migrations — Phase 1
 │   ├── telemetry-store/# @rivet/telemetry-store — ClickHouse access layer — Phase 2–3
 │   ├── grouping/       # @rivet/grouping — pure grouping engine — Phase 2
 │   ├── query/          # @rivet/query — search grammar + planner — Phase 2

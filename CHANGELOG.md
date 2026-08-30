@@ -10,6 +10,15 @@ once versioned releases begin.
 
 ### Added
 
+- `@rivet/database`: control-plane Postgres schema v1 (organizations, users,
+  memberships, teams, projects, environments, services, API keys, DSNs) with
+  committed SQL migrations, an idempotent demo seed, a postgres.js client
+  factory, and PGlite-backed constraint tests that re-prove from-zero
+  migrations on every run (ADR-0006).
+- `@rivet/types`: organization role constants (`ORG_ROLES`) with privilege
+  ranking, consumed by database CHECK constraints.
+- `infrastructure/compose/dev.yml`: Postgres 17 for local development, plus
+  root `db:generate` / `db:migrate` / `db:seed` scripts and `.env.example`.
 - Repository foundation: OSS governance, Apache-2.0 license, docs program,
   foundation ADRs (license, toolchain, storage, telemetry protocol, agent
   safety invariants), phase plan, and design language.
