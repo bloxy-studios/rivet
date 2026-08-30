@@ -96,6 +96,16 @@ describe("seed", () => {
     expect(projects[0]?.n).toBe(0);
   });
 
+  it("fails when a fixed demo id matches its natural key but not its fixture data", async () => {
+    // Same ID, same slug — but a mangled display name must still refuse.
+    await handle.db
+      .insert(schema.organizations)
+      .values({ id: DEMO.org, name: "Mangled Name", slug: "demo" });
+
+    await expect(seed(handle.db)).rejects.toThrow(SeedConflictError);
+    await expect(seed(handle.db)).rejects.toThrow(/different data/);
+  });
+
   it("is idempotent — re-running changes nothing", async () => {
     await seed(handle.db);
     const first = await snapshotCounts();

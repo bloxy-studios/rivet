@@ -193,23 +193,23 @@ async function findConflicts(db: SeedableDatabase): Promise<string[]> {
   expectRow(
     `organization id ${DEMO.org}`,
     await db
-      .select({ slug: schema.organizations.slug })
+      .select({ slug: schema.organizations.slug, name: schema.organizations.name })
       .from(schema.organizations)
       .where(eq(schema.organizations.id, DEMO.org)),
-    { slug: "demo" },
+    { slug: "demo", name: "Demo Org" },
   );
 
-  for (const [id, email] of [
-    [DEMO.ownerUser, DEMO.ownerEmail],
-    [DEMO.developerUser, DEMO.developerEmail],
+  for (const [id, email, name] of [
+    [DEMO.ownerUser, DEMO.ownerEmail, "Demo Owner"],
+    [DEMO.developerUser, DEMO.developerEmail, "Demo Developer"],
   ] as const) {
     expectRow(
       `user id ${id}`,
       await db
-        .select({ email: sql<string>`lower(${schema.users.email})` })
+        .select({ email: sql<string>`lower(${schema.users.email})`, name: schema.users.name })
         .from(schema.users)
         .where(eq(schema.users.id, id)),
-      { email },
+      { email, name },
     );
   }
 
@@ -234,10 +234,10 @@ async function findConflicts(db: SeedableDatabase): Promise<string[]> {
   expectRow(
     `team id ${DEMO.team}`,
     await db
-      .select({ orgId: schema.teams.orgId, slug: schema.teams.slug })
+      .select({ orgId: schema.teams.orgId, slug: schema.teams.slug, name: schema.teams.name })
       .from(schema.teams)
       .where(eq(schema.teams.id, DEMO.team)),
-    { orgId: DEMO.org, slug: "platform" },
+    { orgId: DEMO.org, slug: "platform", name: "Platform" },
   );
 
   expectRow(
@@ -256,10 +256,14 @@ async function findConflicts(db: SeedableDatabase): Promise<string[]> {
   expectRow(
     `project id ${DEMO.project}`,
     await db
-      .select({ orgId: schema.projects.orgId, slug: schema.projects.slug })
+      .select({
+        orgId: schema.projects.orgId,
+        slug: schema.projects.slug,
+        name: schema.projects.name,
+      })
       .from(schema.projects)
       .where(eq(schema.projects.id, DEMO.project)),
-    { orgId: DEMO.org, slug: "demo-app" },
+    { orgId: DEMO.org, slug: "demo-app", name: "Demo App" },
   );
 
   for (const [id, name] of [
@@ -299,10 +303,18 @@ async function findConflicts(db: SeedableDatabase): Promise<string[]> {
   expectRow(
     `DSN id ${DEMO.dsn}`,
     await db
-      .select({ projectId: schema.dsns.projectId, publicKey: schema.dsns.publicKey })
+      .select({
+        projectId: schema.dsns.projectId,
+        publicKey: schema.dsns.publicKey,
+        label: schema.dsns.label,
+      })
       .from(schema.dsns)
       .where(eq(schema.dsns.id, DEMO.dsn)),
-    { projectId: DEMO.project, publicKey: DEMO.dsnPublicKey },
+    {
+      projectId: DEMO.project,
+      publicKey: DEMO.dsnPublicKey,
+      label: "Demo DSN (local development only)",
+    },
   );
 
   return conflicts;
