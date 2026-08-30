@@ -118,7 +118,19 @@ export default function ApiKeysPage() {
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => void revokeApiKey(orgId, key.id).then(load)}
+                      onClick={async () => {
+                        setError(null);
+                        try {
+                          await revokeApiKey(orgId, key.id);
+                          load();
+                        } catch (err) {
+                          setError(
+                            err instanceof ApiError
+                              ? `Could not revoke "${key.name}": ${err.message}`
+                              : "Could not revoke the key.",
+                          );
+                        }
+                      }}
                     >
                       Revoke
                     </Button>

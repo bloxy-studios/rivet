@@ -12,25 +12,62 @@ export interface DialogProps {
 }
 
 /**
- * Minimal controlled dialog: backdrop, Escape to close, focus moved inside
- * on open, dependency-free. Command palette and create-flows build on it.
+ * Minimal controlled dialog with complete keyboard focus management:
+ * focus moves inside on open, Tab/Shift+Tab cycle within the panel, Escape
+ * closes, and focus returns to the invoking control on close.
+ * Dependency-free; the command palette and create-flows build on it.
  */
 export function Dialog({ open, onClose, title, children, className }: DialogProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    // Move focus into the panel (first focusable, else the panel itself).
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const panel = panelRef.current;
-    const focusable = panel?.querySelector<HTMLElement>(
-      "input, button, [href], select, textarea, [tabindex]",
-    );
-    (focusable ?? panel)?.focus();
-    return () => document.removeEventListener("keydown", onKey);
+
+    const focusables = (): HTMLElement[] =>
+      Array.from(
+        panel?.querySelectorAll<HTMLElement>(
+          "input, button, [href], select, textarea, [tabindex]",
+        ) ?? [],
+      ).filter((element) => element.tabIndex !== -1 && !element.hasAttribute("disabled"));
+
+    (focusables()[0] ?? panel)?.focus();
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = focusables();
+      if (items.length === 0) {
+        event.preventDefault();
+        panel?.focus();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || active === panel)) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first?.focus();
+      } else if (active instanceof Node && !panel?.contains(active)) {
+        // Focus escaped (e.g. via pointer on the page behind) — pull it back.
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      previouslyFocused?.focus();
+    };
   }, [open, onClose]);
 
   if (!open) return null;
