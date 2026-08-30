@@ -2,21 +2,12 @@
  * Bun entry point — the only file that touches Bun APIs (ADR-0008).
  * Run with: bun apps/server/src/index.ts (or `bun run dev` for watch mode).
  */
-import { createAuth } from "@rivet/auth";
-import { createDatabase } from "@rivet/database";
-import { createApp } from "./app";
+import { createServerFromEnv } from "./bootstrap";
 import { loadEnv } from "./env";
 import { consoleLogger } from "./logging";
 
 const env = loadEnv(process.env);
-const { db, close } = createDatabase(env.databaseUrl);
-const auth = createAuth({
-  db,
-  secret: env.authSecret,
-  baseURL: env.baseUrl,
-  trustedOrigins: env.trustedOrigins,
-});
-const app = createApp({ db, auth, baseUrl: env.baseUrl, logger: consoleLogger });
+const { app, close } = createServerFromEnv(env, consoleLogger);
 
 const server = Bun.serve({ port: env.port, fetch: app.fetch });
 consoleLogger.info({

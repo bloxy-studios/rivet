@@ -46,8 +46,11 @@ optional). See `.env.example` at the repository root.
 | Create/rename/delete projects · rename org · issue/revoke API keys & DSNs | ADMIN+ |
 | Delete organization | OWNER |
 
-Slugs are immutable after creation. Cross-tenant paths resolve to 404 (lookups always
-carry both ids). Malformed uuids are indistinguishable from missing resources.
+Slugs are immutable after creation. Authorization responses: organization-level
+endpoints return **403** for authenticated non-members (the membership check speaks
+first); **nested** resource lookups (project and below) carry both tenant and resource
+ids, so cross-tenant probes resolve to **404**. Malformed uuids are indistinguishable
+from missing resources (404).
 
 ## Security posture
 
