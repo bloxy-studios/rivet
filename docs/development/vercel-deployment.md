@@ -38,8 +38,10 @@ probes `@opentelemetry/api` this way on the first auth request). Two defenses:
    (ADR-0004); this dependency is roadmap-aligned, not deployment-only.
 2. `vercel/build.sh` ships an empty `node_modules/` inside the function (disables
    Bun auto-install, so any future unresolved probe fails as a clean, catchable
-   module-not-found) and fails the build if the bundle still contains a runtime
-   `import("...")` of a bare npm specifier.
+   module-not-found) and fails the build if the bundle still contains any literal
+   runtime `import(...)` outside `node:`/`bun:` builtins — every quote and
+   whitespace form, bare packages and relative chunks alike
+   (`vercel/audit-bundle.ts`, unit-tested).
 
 Each app ships a `vercel.json` that:
 
