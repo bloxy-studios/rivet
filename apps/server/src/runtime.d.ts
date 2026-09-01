@@ -28,6 +28,7 @@ declare const Bun: {
 };
 
 declare const process: {
+  argv: string[];
   env: Record<string, string | undefined>;
   on(event: "SIGINT" | "SIGTERM", handler: () => void): void;
   exit(code?: number): never;
@@ -46,4 +47,8 @@ declare module "node:crypto" {
 
 declare module "node:url" {
   export function fileURLToPath(url: URL | string): string;
+}
+
+declare module "node:fs/promises" {
+  export function readFile(path: string, encoding: "utf8"): Promise<string>;
 }

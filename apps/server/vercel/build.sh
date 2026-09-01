@@ -22,4 +22,18 @@ mkdir -p "$FUNC" "$OUT/static"
 "$BUN" build vercel/entry.ts --target=bun --outfile="$FUNC/index.js"
 cp vercel/vc-config.json "$FUNC/.vc-config.json"
 cp vercel/output-config.json "$OUT/config.json"
+
+# The function filesystem is read-only. Bun enables auto-install when no
+# node_modules directory exists, which turns any unresolved bare specifier
+# (e.g. an optional-dependency probe inside a library) into a package-install
+# attempt that dies with EROFS instead of the catchable module-not-found the
+# library expects. Shipping an (empty) node_modules disables auto-install so
+# unresolved probes fail cleanly. The bundle itself must stay free of runtime
+# dynamic imports (any quote/whitespace syntax) — the audit fails the build
+# otherwise. Logic + regression tests: vercel/audit-bundle{,.test}.ts.
+mkdir -p "$FUNC/node_modules"
+touch "$FUNC/node_modules/.keep"
+
+"$BUN" vercel/audit-bundle-cli.ts "$FUNC/index.js"
+
 echo "Build Output emitted at $OUT (function: index.func)"
