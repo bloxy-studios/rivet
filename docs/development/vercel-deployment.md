@@ -64,6 +64,15 @@ The `web` project requires `RIVET_API_URL` (the rivet-server deployment URL) so 
 same-origin `/api/*` proxy reaches the API; the server's `RIVET_BASE_URL` must be the
 web app's public origin so identity cookies and origin checks align.
 
+> **Build-time env vars must be declared in `turbo.json`.** Turborepo runs builds in
+> strict env mode: an undeclared variable is stripped before `next build` runs, so a
+> dashboard setting silently never reaches `next.config.ts` (the proxy then falls back
+> to `localhost:3001` and every `/api/*` request 404s with
+> `DNS_HOSTNAME_RESOLVED_PRIVATE`). `RIVET_API_URL` is declared under `web#build` in
+> `env` — not `passThroughEnv` — so it is also hashed into the cache key and changing
+> it invalidates stale builds. Any future variable read at build time needs the same
+> treatment.
+
 The `server` project additionally requires environment variables in Vercel project
 settings — `DATABASE_URL` (a hosted Postgres such as Neon/Supabase), `RIVET_AUTH_SECRET`,
 and `RIVET_BASE_URL` (the deployment URL). Until they are set, the deployment builds
