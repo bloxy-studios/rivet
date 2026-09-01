@@ -25,6 +25,22 @@ caps `buildCommand` at 256 characters) leaves nothing to detection: the committe
 `vercel/vc-config.json` (runtime `bun1.4.x`) and `vercel/output-config.json` (routes)
 declare the one function Vercel deploys.
 
+### The bundle must be self-contained — including dynamic imports
+
+The function filesystem is read-only, and when Bun finds no `node_modules` it enables
+auto-install: an unresolved bare specifier at runtime becomes a package-install
+attempt that kills the process with `EROFS` — even when the importing library
+`try/catch`es the import as an optional probe (Better Auth's instrumentation layer
+probes `@opentelemetry/api` this way on the first auth request). Two defenses:
+
+1. `@opentelemetry/api` is a real (pinned) dependency of `apps/server`, so
+   `bun build` inlines it and the probe resolves in-bundle. Rivet is OTel-native
+   (ADR-0004); this dependency is roadmap-aligned, not deployment-only.
+2. `vercel/build.sh` ships an empty `node_modules/` inside the function (disables
+   Bun auto-install, so any future unresolved probe fails as a clean, catchable
+   module-not-found) and fails the build if the bundle still contains a runtime
+   `import("...")` of a bare npm specifier.
+
 Each app ships a `vercel.json` that:
 
 - Installs Bun 1.4.0 on the build machine (Vercel's default Bun may be older and unable
